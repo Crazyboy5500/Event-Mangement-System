@@ -26,7 +26,10 @@ const jwtSecret = "bsbsfbrnsftentwnnwnwn";
 app.use(express.json());
 app.use(cookieParser());
 app.use(
-   cors()
+   cors({
+      credentials: true,
+      origin: "https://event-mangement-system-sable.vercel.app",
+   })
 );
 
 // Create uploads directory if it doesn't exist
