@@ -22,37 +22,37 @@ import EventDetails from './pages/EventDetails'
 import Notifications from './pages/Notifications'
 import VerificationPage from './pages/VerificationPage'
 
-axios.defaults.baseURL = 'http://localhost:4000/';
-axios.defaults.withCredentials=true;
+axios.defaults.baseURL = 'https://ems-backend-jet.vercel.app/';
+axios.defaults.withCredentials = true;
 
 function App() {
   return (
-    <UserContextProvider> 
-    <Routes>
-            
-      <Route path='/' element={<Layout />}>
-        <Route index element = {<IndexPage />} />
-        <Route path='/useraccount' element = {<UserAccountPage />}/>
-        <Route path='/createEvent' element = {<AddEvent/>} />
-        <Route path='/dashboard' element = {<Dashboard/>} />
-        <Route path='/event/:id' element= {<EventDetails/>} />
-        <Route path='/calendar' element={<CalendarView />} />
-        <Route path='/wallet' element={<TicketPage />}/>
-        <Route path='/event/:id/ordersummary' element = {<OrderSummary />} />
-        <Route path='/events' element={<Events />} />
-        <Route path='/notifications' element={<Notifications />} />
-        <Route path='/verification' element={<VerificationPage />} />
-      </Route>
+    <UserContextProvider>
+      <Routes>
 
-      <Route path='/register' element={<RegisterPage />}/>
-      <Route path='/login' element={<LoginPage />}/>
-      <Route path='/forgotpassword' element = {<ForgotPassword/>} />
-      <Route path='/resetpassword' element = {<ResetPassword/>} />
-      <Route path='/event/:id/ordersummary/paymentsummary' element = {<PaymentSummary />} />
-      
-    
-    </Routes>
-    </UserContextProvider>  
+        <Route path='/' element={<Layout />}>
+          <Route index element={<IndexPage />} />
+          <Route path='/useraccount' element={<UserAccountPage />} />
+          <Route path='/createEvent' element={<AddEvent />} />
+          <Route path='/dashboard' element={<Dashboard />} />
+          <Route path='/event/:id' element={<EventDetails />} />
+          <Route path='/calendar' element={<CalendarView />} />
+          <Route path='/wallet' element={<TicketPage />} />
+          <Route path='/event/:id/ordersummary' element={<OrderSummary />} />
+          <Route path='/events' element={<Events />} />
+          <Route path='/notifications' element={<Notifications />} />
+          <Route path='/verification' element={<VerificationPage />} />
+        </Route>
+
+        <Route path='/register' element={<RegisterPage />} />
+        <Route path='/login' element={<LoginPage />} />
+        <Route path='/forgotpassword' element={<ForgotPassword />} />
+        <Route path='/resetpassword' element={<ResetPassword />} />
+        <Route path='/event/:id/ordersummary/paymentsummary' element={<PaymentSummary />} />
+
+
+      </Routes>
+    </UserContextProvider>
   )
 }
 

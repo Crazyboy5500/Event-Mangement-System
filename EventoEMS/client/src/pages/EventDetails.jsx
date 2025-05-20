@@ -38,14 +38,14 @@ export default function EventDetails() {
       const calculateTimeLeft = () => {
         console.log('Event Date:', event.eventDate);
         console.log('Event Time:', event.eventTime);
-        
+
         // Create a new date object from the event date and time
         const eventDateTime = new Date(`${event.eventDate}T${event.eventTime}`);
         console.log('Event DateTime:', eventDateTime);
-        
+
         const now = new Date();
         console.log('Current Time:', now);
-        
+
         const difference = eventDateTime - now;
         console.log('Time Difference (ms):', difference);
 
@@ -131,8 +131,8 @@ export default function EventDetails() {
       {/* Banner Section */}
       <div className="relative h-[400px] w-full">
         {event.image ? (
-          <img 
-            src={`http://localhost:4000/uploads/${event.image}`}
+          <img
+            src={`https://ems-backend-jet.vercel.app/uploads/${event.image}`}
             alt={event.title}
             className="w-full h-full object-cover"
             onError={(e) => {
@@ -258,19 +258,19 @@ export default function EventDetails() {
         <div className="mt-8">
           <h3 className="text-xl font-semibold mb-6">Share with Friends</h3>
           <div className="flex gap-6 justify-center">
-            <button 
+            <button
               onClick={handleCopyLink}
               className="p-4 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors"
             >
               <FaCopy className="w-6 h-6 text-primary" />
             </button>
-            <button 
+            <button
               onClick={handleWhatsAppShare}
               className="p-4 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors"
             >
               <FaWhatsappSquare className="w-6 h-6 text-primary" />
             </button>
-            <button 
+            <button
               onClick={handleFacebookShare}
               className="p-4 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors"
             >

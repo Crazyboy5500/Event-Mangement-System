@@ -26,10 +26,7 @@ const jwtSecret = "bsbsfbrnsftentwnnwnwn";
 app.use(express.json());
 app.use(cookieParser());
 app.use(
-   cors({
-      credentials: true,
-      origin: "http://localhost:5173",
-   })
+   cors()
 );
 
 // Create uploads directory if it doesn't exist
@@ -48,13 +45,13 @@ mongoose.connect(process.env.MONGO_URL, {
    serverSelectionTimeoutMS: 5000,
    socketTimeoutMS: 45000,
 })
-.then(() => {
-   return Event.find().exec();
-})
-.catch((err) => {
-   console.error('Error:', err);
-   process.exit(1);
-});
+   .then(() => {
+      return Event.find().exec();
+   })
+   .catch((err) => {
+      console.error('Error:', err);
+      process.exit(1);
+   });
 
 // Event listeners for MongoDB connection
 mongoose.connection.on('connected', () => {
@@ -86,7 +83,7 @@ const storage = multer.diskStorage({
    }
 });
 
-const upload = multer({ 
+const upload = multer({
    storage,
    limits: {
       fileSize: 5 * 1024 * 1024 // 5MB limit
@@ -268,14 +265,14 @@ app.post("/tickets", async (req, res) => {
       ticketDetails.ticketDetails.ticketprice = parseFloat(ticketDetails.ticketDetails.ticketprice);
       const newTicket = new Ticket(ticketDetails);
       await newTicket.save();
-      
+
       // Update event's income
       const event = await Event.findById(ticketDetails.eventid);
       if (event) {
          event.Income = (event.Income || 0) + ticketDetails.ticketDetails.ticketprice;
          await event.save();
       }
-      
+
       return res.status(201).json({ ticket: newTicket });
    } catch (error) {
       console.error("Error creating ticket:", error);
@@ -366,7 +363,7 @@ app.get('/admin/stats/revenue', async (req, res) => {
          const ticketPrice = parseFloat(ticket.ticketDetails.ticketprice) || 0;
          return sum + ticketPrice;
       }, 0);
-      
+
       res.json({ amount: totalRevenue });
    } catch (error) {
       console.error('Error fetching revenue stats:', error);
@@ -378,11 +375,11 @@ app.get('/admin/stats/upcoming-events', async (req, res) => {
    try {
       const now = new Date();
       const today = now.toISOString().split('T')[0]; // Get today's date in YYYY-MM-DD format
-      
+
       const count = await Event.countDocuments({
          eventDate: { $gte: today }
       });
-      
+
       res.json({ count });
    } catch (error) {
       console.error('Error fetching upcoming events stats:', error);
@@ -399,13 +396,13 @@ app.get('/admin/stats/recent-events', async (req, res) => {
             path: 'tickets',
             select: 'quantity totalPrice status'
          });
-      
+
       const eventsWithStats = events.map(event => ({
          ...event.toObject(),
          ticketsSold: event.tickets.reduce((sum, ticket) => sum + ticket.quantity, 0),
          revenue: event.tickets.reduce((sum, ticket) => sum + ticket.totalPrice, 0)
       }));
-      
+
       res.json({ events: eventsWithStats });
    } catch (error) {
       console.error('Error fetching recent events:', error);
@@ -415,76 +412,76 @@ app.get('/admin/stats/recent-events', async (req, res) => {
 
 // Email Verification
 app.post('/api/verify/email', async (req, res) => {
-  try {
-    const { userId } = req.body;
-    const user = await UserModel.findById(userId);
-    
-    if (!user) {
-      return res.status(404).json({ error: 'User not found' });
-    }
+   try {
+      const { userId } = req.body;
+      const user = await UserModel.findById(userId);
 
-    // Generate verification token
-    const verificationToken = Math.random().toString(36).substring(2, 15);
-    user.emailVerificationToken = verificationToken;
-    await user.save();
+      if (!user) {
+         return res.status(404).json({ error: 'User not found' });
+      }
 
-    // TODO: Send verification email with token
-    // For now, we'll just simulate the verification
-    user.emailVerified = true;
-    await user.save();
+      // Generate verification token
+      const verificationToken = Math.random().toString(36).substring(2, 15);
+      user.emailVerificationToken = verificationToken;
+      await user.save();
 
-    res.json({ success: true, message: 'Verification email sent' });
-  } catch (error) {
-    console.error('Error sending verification email:', error);
-    res.status(500).json({ error: 'Failed to send verification email' });
-  }
+      // TODO: Send verification email with token
+      // For now, we'll just simulate the verification
+      user.emailVerified = true;
+      await user.save();
+
+      res.json({ success: true, message: 'Verification email sent' });
+   } catch (error) {
+      console.error('Error sending verification email:', error);
+      res.status(500).json({ error: 'Failed to send verification email' });
+   }
 });
 
 // Phone Verification
 app.post('/api/verify/phone', async (req, res) => {
-  try {
-    const { userId, phoneNumber } = req.body;
-    const user = await UserModel.findById(userId);
-    
-    if (!user) {
-      return res.status(404).json({ error: 'User not found' });
-    }
+   try {
+      const { userId, phoneNumber } = req.body;
+      const user = await UserModel.findById(userId);
 
-    // Generate verification code
-    const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
-    user.phoneVerificationCode = verificationCode;
-    await user.save();
+      if (!user) {
+         return res.status(404).json({ error: 'User not found' });
+      }
 
-    // TODO: Send verification SMS with code
-    // For now, we'll just simulate the verification
-    user.phoneVerified = true;
-    await user.save();
+      // Generate verification code
+      const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
+      user.phoneVerificationCode = verificationCode;
+      await user.save();
 
-    res.json({ success: true, message: 'Verification code sent' });
-  } catch (error) {
-    console.error('Error sending verification code:', error);
-    res.status(500).json({ error: 'Failed to send verification code' });
-  }
+      // TODO: Send verification SMS with code
+      // For now, we'll just simulate the verification
+      user.phoneVerified = true;
+      await user.save();
+
+      res.json({ success: true, message: 'Verification code sent' });
+   } catch (error) {
+      console.error('Error sending verification code:', error);
+      res.status(500).json({ error: 'Failed to send verification code' });
+   }
 });
 
 // Get verification status
 app.get('/api/verification/:userId', async (req, res) => {
-  try {
-    const { userId } = req.params;
-    const user = await UserModel.findById(userId);
-    
-    if (!user) {
-      return res.status(404).json({ error: 'User not found' });
-    }
+   try {
+      const { userId } = req.params;
+      const user = await UserModel.findById(userId);
 
-    res.json({
-      emailVerified: user.emailVerified || false,
-      phoneVerified: user.phoneVerified || false
-    });
-  } catch (error) {
-    console.error('Error fetching verification status:', error);
-    res.status(500).json({ error: 'Failed to fetch verification status' });
-  }
+      if (!user) {
+         return res.status(404).json({ error: 'User not found' });
+      }
+
+      res.json({
+         emailVerified: user.emailVerified || false,
+         phoneVerified: user.phoneVerified || false
+      });
+   } catch (error) {
+      console.error('Error fetching verification status:', error);
+      res.status(500).json({ error: 'Failed to fetch verification status' });
+   }
 });
 
 const PORT = process.env.PORT || 4000;

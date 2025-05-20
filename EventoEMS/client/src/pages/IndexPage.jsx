@@ -42,7 +42,7 @@ const useScrollAnimation = () => {
 };
 
 export default function IndexPage() {
-  const {user} = useContext(UserContext);
+  const { user } = useContext(UserContext);
   const [events, setEvents] = useState([]);
   const [currentSlide, setCurrentSlide] = useState(0);
   const [stats, setStats] = useState({
@@ -58,22 +58,22 @@ export default function IndexPage() {
   const [featuredRef, isFeaturedVisible] = useScrollAnimation();
 
   const slides = [
-    { 
+    {
       image: slide1,
       heading: "Discover Amazing Events",
       subheading: "Find and book tickets for the best events in town"
     },
-    { 
+    {
       image: slide2,
       heading: "Create Your Own Event",
       subheading: "Host and manage your events with ease"
     },
-    { 
+    {
       image: slide3,
       heading: "Connect with Community",
       subheading: "Join thousands of event enthusiasts"
     },
-    { 
+    {
       image: slide4,
       heading: "Special Offers",
       subheading: "Get exclusive deals on popular events"
@@ -109,7 +109,7 @@ export default function IndexPage() {
         console.error("Error fetching events:", error);
       });
   }, []);
-  
+
   //! Like Functionality --------------------------------------------------------------
   const handleLike = (eventId) => {
     if (!user) {
@@ -122,14 +122,14 @@ export default function IndexPage() {
     const hasLiked = event?.likedBy?.includes(user._id);
 
     axios
-      .post(`/event/${eventId}`, { 
+      .post(`/event/${eventId}`, {
         action: hasLiked ? 'unlike' : 'like',
-        userId: user._id 
+        userId: user._id
       })
       .then((response) => {
         // Update the events state with the updated event from the server
-        setEvents(prevEvents => 
-          prevEvents.map(event => 
+        setEvents(prevEvents =>
+          prevEvents.map(event =>
             event._id === eventId ? response.data : event
           )
         );
@@ -147,9 +147,8 @@ export default function IndexPage() {
             {slides.map((slide, index) => (
               <div
                 key={index}
-                className={`absolute w-full h-full transition-opacity duration-1000 ${
-                  index === currentSlide ? 'opacity-100' : 'opacity-0'
-                }`}
+                className={`absolute w-full h-full transition-opacity duration-1000 ${index === currentSlide ? 'opacity-100' : 'opacity-0'
+                  }`}
               >
                 <img
                   src={slide.image}
@@ -173,9 +172,8 @@ export default function IndexPage() {
                 <button
                   key={index}
                   onClick={() => setCurrentSlide(index)}
-                  className={`w-3 h-3 rounded-full ${
-                    index === currentSlide ? 'bg-white' : 'bg-white/50'
-                  }`}
+                  className={`w-3 h-3 rounded-full ${index === currentSlide ? 'bg-white' : 'bg-white/50'
+                    }`}
                 />
               ))}
             </div>
@@ -183,21 +181,19 @@ export default function IndexPage() {
         </div>
 
         {/* Event Categories Section */}
-        <div 
+        <div
           ref={categoriesRef}
-          className={`py-16 bg-white transition-all duration-1000 ${
-            isCategoriesVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-20'
-          }`}
+          className={`py-16 bg-white transition-all duration-1000 ${isCategoriesVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-20'
+            }`}
         >
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <h2 className="text-3xl font-bold text-center text-gray-900 mb-12">Event Genres</h2>
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
               {categories.map((category, index) => (
-                <div 
+                <div
                   key={index}
-                  className={`group p-6 bg-gray-50 rounded-lg hover:bg-primary hover:text-white transition-all duration-300 cursor-pointer text-center ${
-                    isCategoriesVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-20'
-                  }`}
+                  className={`group p-6 bg-gray-50 rounded-lg hover:bg-primary hover:text-white transition-all duration-300 cursor-pointer text-center ${isCategoriesVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-20'
+                    }`}
                   style={{ transitionDelay: `${index * 100}ms` }}
                 >
                   <div className="text-primary group-hover:text-white mb-4 flex justify-center">
@@ -210,29 +206,28 @@ export default function IndexPage() {
           </div>
         </div>
 
-        <div 
+        <div
           ref={eventsRef}
-          className={`mx-10 my-5 grid gap-x-6 gap-y-8 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 sm:mx-5 transition-all duration-1000 ${
-            isEventsVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-20'
-          }`}
+          className={`mx-10 my-5 grid gap-x-6 gap-y-8 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 sm:mx-5 transition-all duration-1000 ${isEventsVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-20'
+            }`}
         >
           {/* Events grid content */}
           {events.length > 0 && events.map((event) => {
             const eventDate = new Date(event.eventDate);
             const currentDate = new Date();
             const hasLiked = event?.likedBy?.includes(user?._id);
-            
-            if (eventDate > currentDate || eventDate.toDateString() === currentDate.toDateString()){
+
+            if (eventDate > currentDate || eventDate.toDateString() === currentDate.toDateString()) {
               return (
                 <div className="bg-white rounded-xl relative" key={event._id}>
                   {/* Event card content */}
                   <div className='rounded-tl-[0.75rem] rounded-tr-[0.75rem] rounded-br-[0] rounded-bl-[0] object-fill aspect-16:9'>
                     {event.image && (
                       <img
-                        src={`http://localhost:4000/uploads/${event.image}`}
+                        src={`https://ems-backend-jet.vercel.app/uploads/${event.image}`}
                         alt={event.title}
-                        width="300" 
-                        height="200" 
+                        width="300"
+                        height="200"
                         className="w-full h-full"
                       />
                     )}
@@ -248,19 +243,19 @@ export default function IndexPage() {
                       <h1 className="font-bold text-lg mt-2">{event.title.toUpperCase()}</h1>
                       <div className="flex gap-2 items-center mr-4 text-red-600"> <BiLike /> {event.likes}</div>
                     </div>
-                    
+
                     <div className="flex text-sm flex-nowrap justify-between text-primarydark font-bold mr-4">
                       <div>{event.eventDate.split("T")[0]}, {event.eventTime}</div>
-                      <div>{event.ticketPrice === 0? 'Free' : 'Rs. '+ event.ticketPrice}</div>
+                      <div>{event.ticketPrice === 0 ? 'Free' : 'Rs. ' + event.ticketPrice}</div>
                     </div>
 
                     <div className="text-xs flex flex-col flex-wrap truncate-text">{event.description}</div>
                     <div className="flex justify-between items-center my-2 mr-4">
                       <div className="text-sm text-primarydark ">Organized By: <br /><span className="font-bold">{event.organizedBy}</span></div>
-                      <div className="text-sm text-primarydark ">Created By: <br/> <span className="font-semibold">{event.owner.toUpperCase()}</span></div>
+                      <div className="text-sm text-primarydark ">Created By: <br /> <span className="font-semibold">{event.owner.toUpperCase()}</span></div>
                     </div>
                     {user && user.role !== 'admin' && (
-                      <Link to={'/event/'+event._id} className="flex justify-center">
+                      <Link to={'/event/' + event._id} className="flex justify-center">
                         <button className="primary flex items-center gap-2">Book Ticket< BsArrowRightShort className="w-6 h-6" /></button>
                       </Link>
                     )}
@@ -273,11 +268,10 @@ export default function IndexPage() {
         </div>
 
         {/* Featured Events Section */}
-        <div 
+        <div
           ref={featuredRef}
-          className={`py-16 px-4 sm:px-6 lg:px-8 bg-white transition-all duration-1000 ${
-            isFeaturedVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-20'
-          }`}
+          className={`py-16 px-4 sm:px-6 lg:px-8 bg-white transition-all duration-1000 ${isFeaturedVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-20'
+            }`}
         >
           <div className="max-w-7xl mx-auto">
             <h2 className="text-3xl font-bold text-center text-gray-900 mb-12">Featured Events</h2>
@@ -502,4 +496,3 @@ export default function IndexPage() {
     </>
   );
 }
-  

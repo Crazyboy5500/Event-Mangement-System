@@ -7,7 +7,7 @@ import { Link } from 'react-router-dom';
 import { format } from 'date-fns';
 
 export default function Dashboard() {
-  const {user} = useContext(UserContext);
+  const { user } = useContext(UserContext);
   const navigate = useNavigate();
   const [stats, setStats] = useState({
     totalUsers: 0,
@@ -32,31 +32,31 @@ export default function Dashboard() {
         axios.get('/admin/stats/recent-events'),
         axios.get('/admin/users')
       ])
-      .then(([usersRes, eventsRes, ticketsRes, revenueRes, upcomingRes, recentRes, allUsersRes]) => {
-        console.log('API Responses:', {
-          users: usersRes.data,
-          events: eventsRes.data,
-          tickets: ticketsRes.data,
-          revenue: revenueRes.data,
-          upcoming: upcomingRes.data,
-          recent: recentRes.data,
-          allUsers: allUsersRes.data
-        });
+        .then(([usersRes, eventsRes, ticketsRes, revenueRes, upcomingRes, recentRes, allUsersRes]) => {
+          console.log('API Responses:', {
+            users: usersRes.data,
+            events: eventsRes.data,
+            tickets: ticketsRes.data,
+            revenue: revenueRes.data,
+            upcoming: upcomingRes.data,
+            recent: recentRes.data,
+            allUsers: allUsersRes.data
+          });
 
-        setStats({
-          totalUsers: usersRes.data.count,
-          totalEvents: eventsRes.data.count,
-          totalTickets: ticketsRes.data.count,
-          totalRevenue: revenueRes.data.amount,
-          upcomingEvents: upcomingRes.data.count,
-          recentEvents: recentRes.data.events,
-          users: allUsersRes.data.users
+          setStats({
+            totalUsers: usersRes.data.count,
+            totalEvents: eventsRes.data.count,
+            totalTickets: ticketsRes.data.count,
+            totalRevenue: revenueRes.data.amount,
+            upcomingEvents: upcomingRes.data.count,
+            recentEvents: recentRes.data.events,
+            users: allUsersRes.data.users
+          });
+        })
+        .catch(error => {
+          console.error('Error fetching dashboard data:', error);
+          setError('Failed to load dashboard data. Please try again.');
         });
-      })
-      .catch(error => {
-        console.error('Error fetching dashboard data:', error);
-        setError('Failed to load dashboard data. Please try again.');
-      });
     }
   }, [user]);
 
@@ -78,7 +78,7 @@ export default function Dashboard() {
   return (
     <div className="p-8">
       <h1 className="text-3xl font-bold mb-8">Admin Dashboard</h1>
-      
+
       <div className="flex gap-8">
         {/* Left Column - Main Content */}
         <div className="flex-1 max-w-[calc(100%-400px)]">
@@ -88,12 +88,12 @@ export default function Dashboard() {
               <h3 className="text-lg font-semibold mb-2">Upcoming Events</h3>
               <p className="text-3xl font-bold text-primary">{stats.upcomingEvents}</p>
             </div>
-            
+
             <div className="bg-white p-6 rounded-lg shadow-md">
               <h3 className="text-lg font-semibold mb-2">Total Revenue</h3>
               <p className="text-3xl font-bold text-primary">₹{stats.totalRevenue}</p>
             </div>
-            
+
             <div className="bg-white p-6 rounded-lg shadow-md">
               <h3 className="text-lg font-semibold mb-2">Total Tickets Sold</h3>
               <p className="text-3xl font-bold text-primary">{stats.totalTickets}</p>
@@ -105,13 +105,13 @@ export default function Dashboard() {
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-2xl font-semibold">Recent Events</h2>
               <div className="flex gap-2">
-                <button 
+                <button
                   onClick={() => navigate('/createEvent')}
                   className="bg-primary text-white py-2 px-4 rounded hover:bg-primarydark transition-colors"
                 >
                   Create New Event
                 </button>
-                <button 
+                <button
                   onClick={() => navigate('/events')}
                   className="bg-primary text-white py-2 px-4 rounded hover:bg-primarydark transition-colors"
                 >
@@ -127,8 +127,8 @@ export default function Dashboard() {
                     {/* Event Image */}
                     <div className="h-56 relative">
                       {event.image ? (
-                        <img 
-                          src={`http://localhost:4000/uploads/${event.image}`}
+                        <img
+                          src={`https://ems-backend-jet.vercel.app/uploads/${event.image}`}
                           alt={event.title}
                           className="w-full h-full object-cover"
                           onError={(e) => {
@@ -143,22 +143,21 @@ export default function Dashboard() {
                         </div>
                       )}
                       <div className="absolute top-2 right-2">
-                        <span className={`px-2 py-1 text-xs font-semibold rounded-full ${
-                          new Date(event.eventDate) > new Date() 
-                            ? 'bg-green-100 text-green-800' 
-                            : 'bg-gray-100 text-gray-800'
-                        }`}>
+                        <span className={`px-2 py-1 text-xs font-semibold rounded-full ${new Date(event.eventDate) > new Date()
+                          ? 'bg-green-100 text-green-800'
+                          : 'bg-gray-100 text-gray-800'
+                          }`}>
                           {new Date(event.eventDate) > new Date() ? 'Upcoming' : 'Completed'}
                         </span>
                       </div>
                     </div>
-                    
+
                     {/* Event Title and Location */}
                     <div className="p-4">
                       <h3 className="text-lg font-semibold mb-2">{event.title}</h3>
                       <p className="text-gray-600 text-sm">{event.location}</p>
                     </div>
-                    
+
                     {/* Event Date, Time and Price */}
                     <div className="px-4 py-3 bg-gray-50 flex justify-between items-center">
                       <div className="text-sm">
@@ -194,11 +193,10 @@ export default function Dashboard() {
                       <td className="px-6 py-4 whitespace-nowrap">{user.name}</td>
                       <td className="px-6 py-4 whitespace-nowrap">{user.email}</td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                          user.role === 'admin' 
-                            ? 'bg-purple-100 text-purple-800' 
-                            : 'bg-blue-100 text-blue-800'
-                        }`}>
+                        <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${user.role === 'admin'
+                          ? 'bg-purple-100 text-purple-800'
+                          : 'bg-blue-100 text-blue-800'
+                          }`}>
                           {user.role}
                         </span>
                       </td>
@@ -227,8 +225,8 @@ export default function Dashboard() {
                 .map(event => (
                   <div key={event._id} className="relative h-full rounded-lg overflow-hidden group">
                     {event.image ? (
-                      <img 
-                        src={`http://localhost:4000/uploads/${event.image}`}
+                      <img
+                        src={`https://ems-backend-jet.vercel.app/uploads/${event.image}`}
                         alt={event.title}
                         className="w-full h-full object-cover"
                         onError={(e) => {
@@ -264,7 +262,7 @@ export default function Dashboard() {
                 </button>
                 <span className="text-sm font-semibold">{format(new Date(), "MMMM yyyy")}</span>
                 <button className="hover:bg-gray-100 p-1 rounded-full">
-                  <BsFillCaretRightFill className="w-4 h-4 text-gray-600"/>
+                  <BsFillCaretRightFill className="w-4 h-4 text-gray-600" />
                 </button>
               </div>
               <div className="grid grid-cols-7 text-center mb-2">
@@ -275,13 +273,13 @@ export default function Dashboard() {
               <div className="grid grid-cols-7 gap-1">
                 {Array.from({ length: 35 }, (_, i) => {
                   const eventDate = new Date(stats.recentEvents[i]?.eventDate || '');
-                  const hasEvent = eventDate.getDate() === i + 1 && 
-                                 eventDate.getMonth() === new Date().getMonth() &&
-                                 eventDate.getFullYear() === new Date().getFullYear();
+                  const hasEvent = eventDate.getDate() === i + 1 &&
+                    eventDate.getMonth() === new Date().getMonth() &&
+                    eventDate.getFullYear() === new Date().getFullYear();
                   const isToday = i + 1 === new Date().getDate();
                   return (
-                    <div 
-                      key={i} 
+                    <div
+                      key={i}
                       className="relative aspect-square"
                     >
                       <div className={`
@@ -312,8 +310,8 @@ export default function Dashboard() {
                   return eventDate.getMonth() === new Date().getMonth();
                 })
                 .map((event) => (
-                  <Link 
-                    key={event._id} 
+                  <Link
+                    key={event._id}
                     to={"/event/" + event._id}
                     className="block text-xs hover:bg-gray-50 p-2 rounded"
                   >
