@@ -151,7 +151,15 @@ app.post("/login", async (req, res) => {
          if (err) {
             return res.status(500).json({ error: "Failed to generate token" });
          }
-         res.cookie("token", token).json(userDoc);
+         res.cookie("token", token, {
+  httpOnly: true,          // JS can't access cookie (helps prevent XSS)
+  secure: true,            // Cookie only sent over HTTPS
+  sameSite: "None",        // Allows cross-site cookies (important for different domains)
+//   domain: ".yourbackenddomain.com", // Optional: set domain if needed
+  path: "/",               // Cookie available to all routes
+  maxAge: 24 * 60 * 60 * 1000 // 1 day
+}).json(userDoc);
+
       }
    );
 });
