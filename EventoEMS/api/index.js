@@ -178,7 +178,13 @@ app.get("/profile", (req, res) => {
 });
 
 app.post("/logout", (req, res) => {
-   res.cookie("token", "").json(true);
+     res.cookie("token", "", {
+    httpOnly: true,
+    secure: true,
+    sameSite: "None",
+    path: "/",         // Optional but good practice if used in login
+    expires: new Date(0) // Expire the cookie immediately
+  }).json(true);
 });
 
 app.post("/createEvent", upload.single("image"), async (req, res) => {
