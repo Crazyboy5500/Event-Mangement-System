@@ -106,6 +106,101 @@ export default function PaymentSummary() {
         [name]: value,
       }));
     };
+
+    function loadScript(src) {
+        return new Promise((resolve) => {
+            const script = document.createElement("script");
+            script.src = src;
+            script.onload = () => {
+                resolve(true);
+            };
+            script.onerror = () => {
+                resolve(false);
+            };
+            document.body.appendChild(script);
+        });
+    }
+
+const handleRazorpayPayment = async () => {
+    // Load Razorpay script
+    const res = await loadScript("https://checkout.razorpay.com/v1/checkout.js");
+
+    if (!res) {
+        toast.error("Razorpay SDK failed to load. Are you online?");
+        return false;
+    }
+
+    try {
+        // Create new order
+        const result = await axios.post("https://ems-backend-jet.vercel.app/api/orders", {
+            amount: event.ticketPrice * 100
+        });
+
+        if (!result) {
+            toast.error("Server error. Are you online?");
+            return false;
+        }
+
+        // Getting the order details back
+        const { amount, id: order_id, currency } = result.data;
+        // console.log(details.contactNo);
+        
+        return new Promise((resolve) => {
+            const options = {
+                key: "rzp_test_cQpArg3JWUR81S",
+                amount: amount,
+                currency: currency,
+                name: "Ticketly",
+                description: ticketDetails.ticketDetails.eventname,
+                order_id: order_id,
+                handler: function (response) {
+                    const data = {
+                        orderCreationId: order_id,
+                        razorpayPaymentId: response.razorpay_payment_id,
+                        razorpayOrderId: response.razorpay_order_id,
+                        razorpaySignature: response.razorpay_signature,
+                    };
+                    // You could post this data to your backend here if needed
+                    // const result = await axios.post("http://localhost:5000/payment/success", data);
+                    
+                    // Important: Resolve the promise to true when payment is successful
+                    resolve(true);
+                },
+                prefill: {
+                    name: details.name,
+                    email: details.email,
+                    contact: details.contactNo,
+                },
+                notes: {
+                    address: "Soumya Dey Corporate Office",
+                },
+                theme: {
+                    color: "#61dafb",
+                },
+                modal: {
+                    ondismiss: function() {
+                        // Important: Resolve to false if the payment modal is dismissed
+                        resolve(false);
+                    }
+                }
+            };
+
+            const paymentObject = new window.Razorpay(options);
+            paymentObject.on('payment.failed', function (response) {
+                toast.error('Payment failed');
+                resolve(false);
+            });
+            paymentObject.open();
+        });
+    } catch (error) {
+        console.error("Error in Razorpay payment:", error);
+        toast.error("Payment initiation failed");
+        return false;
+    }
+};
+
+
+
 //! creating a ticket ------------------------------
     const createTicket = async (e) => {
       e.preventDefault();
@@ -113,6 +208,14 @@ export default function PaymentSummary() {
       setError(null);
 
       try {
+        const paymentSuccessful = await handleRazorpayPayment();
+            
+        if (!paymentSuccessful) {
+            toast.error("Payment was not completed");
+            setLoading(false);
+            return;
+        }
+
         const qrData = {
           eventName: ticketDetails.ticketDetails.eventname,
           attendeeName: ticketDetails.ticketDetails.name,

@@ -12,6 +12,7 @@ import multer from "multer";
 import path from "path";
 import { fileURLToPath } from 'url';
 import fs from "fs";
+import Razorpay from "razorpay";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -31,6 +32,11 @@ app.use(
       origin: "https://event-mangement-system-sable.vercel.app",
    })
 );
+
+const razorpay = new Razorpay({
+   key_id: process.env.RZP_KEY_ID,
+   key_secret: process.env.RZP_KEY_SECRET,
+});
 
 // Create uploads directory if it doesn't exist
 const uploadsDir = path.join(__dirname, 'uploads');
@@ -486,6 +492,29 @@ app.get('/api/verification/:userId', async (req, res) => {
       res.status(500).json({ error: 'Failed to fetch verification status' });
    }
 });
+
+app.post("/api/orders", async (req, res) => {
+   const amount = req.body.amount
+
+   console.log("new order: ", amount);
+   
+
+   try {
+      const options = {
+         amount: parseInt(amount), // amount in smallest currency unit
+         currency: "INR",
+      };
+
+      const order = await razorpay.orders.create(options);
+
+      if (!order) return res.status(500).send("Some error occured");
+
+      res.json(order);
+   } catch (error) {
+      res.status(500).send(error);
+   }
+});
+
 
 const PORT = process.env.PORT || 4000;
 app.listen(PORT, () => {
